@@ -1,105 +1,115 @@
 """
-Periodic Continued Fractions
+Periodic continued fractions.
 
-To obtain continued fraction representation for the value
-((sqrt(17) - 19)/21) we write
+Aimed at Python 3.
 
->>> PCF(17, -19, 21)
-[-1; 3, <period start> 2, 3, 18, 1, 20, 1, 2, 3, 5, 8, 1, 12]
-
-for the value (1/5-sqrt(13)) we write
-
->>> PCF(13 * 5**2, -1, -5)
-[-4; 1, 1, <period start> 2, 6, 1, 4, 7, 180, 7, 4, 1, 6, 2]
-
->>> PCF(13 * 5**2, -1, -5).repr_combining()
-'[-4; 1, 1, 2̅,̅ ̅6̅,̅ ̅1̅,̅ ̅4̅,̅ ̅7̅,̅ ̅1̅8̅0̅,̅ ̅7̅,̅ ̅4̅,̅ ̅1̅,̅ ̅6̅,̅ ̅2̅]'
-
-The latter string uses unicode combining characters, and should look
-pretty enough after inserting in some Word-like editor.
-
-for the value 123456/100500 we write
-
->>> FCF(123456, 100500)
-[1; 4, 2, 1, 1, 1, 4, 1, 2, 4, 1, 2]
-
-resolve_pcf and resolve_fcf should be self-descriptive:
-
->>> resolve_pcf([1, 5], [2, 3])
-(15, -24, -17)
->>> PCF(15, -24, -17)
-[1; 5, <period start> 2, 3]
-
->>> resolve_fcf([1, 5, 2, 3])
-(45, 38)
->>> FCF(45, 38)
-[1; 5, 2, 3]
-
+Docstrings of main classes contain examples.
+Running this as a script will launch doctest.
 """
 
-from fractions import gcd
+__all__ = ['PeriodicContinuedFraction', 'FiniteContinuedFraction']
 
-__all__ = ['PCF', 'FCF', 'resolve_pcf', 'resolve_fcf']
+import fractions
+import numbers
+import math
+from functools import reduce
 
-def int_sqrt(A):
-    x, y = A-1, A
-    while not x**2 < A < y**2:
-        y = (x + A // -x // -1) // -2 // -1
-        x = y - 1
-        if A == y**2:
-            return y
-    return x, y
+class PeriodicContinuedFraction:
+    r"""
+    Periodic continued fraction
 
-class PCF:
+    This stands for '(sqrt(17) - 19) / 21':
+    >>> the_pcf = PeriodicContinuedFraction(-19, 21, 17)
+
+    Value is converted to satisfy some internal requirements
+    (see implementation):
+    >>> the_pcf
+    PeriodicContinuedFraction(-399, 441, 7497)
+    >>> the_pcf.tex_repr()
+    '\\frac{-399 + \\sqrt{7497}}{441}'
+
+    Computation of continued fraction preperiod and period:
+    >>> the_pcf.fraction
+    [-1; 3, <period:> 2, 3, 18, 1, 20, 1, 2, 3, 5, 8, 1, 12]
+    >>> the_pcf.fraction.__repr__()
+    '[-1; 3, <period:> 2, 3, 18, 1, 20, 1, 2, 3, 5, 8, 1, 12]'
+    >>> the_pcf.fraction.tex_repr()
+    '[\\, -1; 3, \\overline{2, 3, 18, 1, 20, 1, 2, 3, 5, 8, 1, 12} \\,]'
+
+    Unicode representation uses unicode combinig characters and should
+    look pretty in Word or Google Docs or something:
+    >>> the_pcf.fraction.unicode_repr()
+    '[-1; 3, 2̅,̅ ̅3̅,̅ ̅1̅8̅,̅ ̅1̅,̅ ̅2̅0̅,̅ ̅1̅,̅ ̅2̅,̅ ̅3̅,̅ ̅5̅,̅ ̅8̅,̅ ̅1̅,̅ ̅1̅2̅]'
+
+    Error and corner cases:
+    >>> PeriodicContinuedFraction(-19, 0, 17)
+    Traceback (most recent call last):
+        ...
+    ValueError: nonzero denominator required
+    >>> PeriodicContinuedFraction(-19, 21, 0)
+    FiniteContinuedFraction(-19, 21)
+    >>> PeriodicContinuedFraction(-19, 21, 4)
+    FiniteContinuedFraction(-17, 21)
+    >>> PeriodicContinuedFraction(-19, 21, -5)
+    Traceback (most recent call last):
+        ...
+    ValueError: non-negative sqrtbase required
+
+    Reverse problem: having the preperiod and period, compute the value
+    of periodic fraction:
+    >>> the_pcf = PeriodicContinuedFraction.from_cfraction([1, 5], [2, 5])
+    >>> the_pcf.tex_repr()
+    '\\frac{0 + \\sqrt{35}}{5}'
+    >>> the_pcf.fraction
+    [1; <period:> 5, 2]
     """
-    Periodic continued fraction.
-    """
-    def __new__(cls, A, B=0, C=1):
-        # \frac{\sqrt{A} + B}{C}
-        if not all(isinstance(x, int) for x in (A, B, C)):
+
+    def __new__(cls, numerator=0, denominator=1, sqrtbase=0):
+        if not all(
+            isinstance(x, int)
+            for x in (numerator, denominator, sqrtbase)
+        ):
             raise TypeError("int arguments required")
-        if C == 0:
-            raise ValueError("nonzero C required")
-        if A <= 1:
-            raise ValueError("A > 1 required")
+        if denominator == 0:
+            raise ValueError("nonzero denominator required")
+        if sqrtbase < 0:
+            raise ValueError("non-negative sqrtbase required")
 
-        if isinstance(int_sqrt(A), int):
-            return FCF(int_sqrt(A) + B, C)
-        # the alternative is a tuple of two ints, which means
-        # non-integral \sqrt{A}
+        sqroot = int_sqrt(sqrtbase)
+        if isinstance(sqroot, int):
+            return FiniteContinuedFraction(numerator + sqroot, denominator)
 
         return super().__new__(cls)
 
-    def __init__(self, A, B=0, C=1):
-        if (A - B**2) % C:
-            q = abs(C)
-            A *= q**2; B *= q; C *= q
-        assert (A - B**2) % C == 0, (A, B, C)
+    def __init__(self, numerator=0, denominator=1, sqrtbase=0):
+        """"""
+        # Convert value to satisfy the following assertion
+        p = abs(denominator // gcd(numerator**2 - sqrtbase, denominator))
+        numerator *= p; denominator *= p; sqrtbase *= p**2
+        q = abs(gcd(
+            (numerator**2 - sqrtbase) // denominator,
+            numerator, denominator ))
+        numerator //= q; denominator //= q; sqrtbase //= q**2
+        assert (numerator**2 - sqrtbase) % denominator == 0
 
-        self.origin = (A, B, C)
+        self.numerator = numerator
+        self.denominator = denominator
+        self.sqrtbase = sqrtbase
+        self.origin = (P, Q) = (numerator, denominator)
         self.nextmap = nextmap = {}
-        sqrtA_down, sqrtA_up = int_sqrt(A)
+        sqroot_floor, sqroot_ceil = int_sqrt(sqrtbase)
         while True:
-            if (A, B, C) in nextmap:
-                self.periodstart = (A, B, C)
+            if (P, Q) in nextmap:
+                self.periodstart = (P, Q)
                 break
-            if C > 0:
-                quotient = (sqrtA_down + B) // C
+            if Q > 0:
+                quotient = (sqroot_floor + P) // Q
             else:
-                quotient = (- sqrtA_up - B) // -C
-            B1 = C * quotient - B
-            C1 = (A - B1**2) // C
-            nextmap[A, B, C] = quotient, (A, B1, C1)
-            B = B1
-            C = C1
-
-    @property
-    def preperiod(self):
-        return list(self.iter_preperiod())
-
-    @property
-    def period(self):
-        return list(self.iter_period())
+                quotient = (-sqroot_ceil - P) // -Q
+            next_P = Q * quotient - P
+            next_Q = (sqrtbase - next_P**2) // Q
+            nextmap[P, Q] = quotient, (next_P, next_Q)
+            P, Q = next_P, next_Q
 
     def iter_preperiod(self):
         value = self.origin
@@ -118,116 +128,309 @@ class PCF:
             if value == periodstart:
                 return
 
-    def __iter__(self):
+    def iter_quotients(self):
         value = self.origin
         nextmap = self.nextmap
         while True:
             quotient, value = nextmap[value]
             yield quotient
 
-    def __repr__(self, combining=False):
-        preperiod = []
-        delimiter = ';'
-        for i in self.iter_preperiod():
-            preperiod.append(str(i))
-            preperiod.append(delimiter)
-            delimiter = ','
-            preperiod.append(' ')
-        preperiod = ''.join(preperiod)
+    def __repr__(self):
+        return (
+            '{self.__class__.__name__}'
+            '({self.numerator}, {self.denominator}, {self.sqrtbase})'
+            .format(self=self) )
 
-        period = []
-        for i in self.iter_period():
-            period.append(str(i))
-            period.append(delimiter)
-            delimiter = ','
-            period.append(' ')
-        else:
-            del period[-2:]
-        if combining:
-        # This produce a mess in the terminal
-            period = list(''.join(period))
-            for i in range(len(period)):
-                period[2*i+1:2*i+1] = '\N{COMBINING OVERLINE}'
-        period = ''.join(period)
-        return ('['
-            + preperiod
-            + ('<period start> ' if not combining else '')
-            + period + ']')
+    def tex_repr(self):
+        return (
+            r'\frac{{{self.numerator} + \sqrt{{{self.sqrtbase}}}}}'
+            r'{{{self.denominator}}}'
+            .format(self=self) )
 
-    def repr_combining(self):
-        return self.__repr__(combining=True)
+    def __float__(self):
+        """
+        Return approximate value as a float.
 
-class FCF:
+        This operation does not make sense here really, and is shipped just
+        for the sake of completeness.
+
+        >>> float(PeriodicContinuedFraction(10, 11, 13))
+        1.2368682977694536
+        """
+        return (self.numerator + math.sqrt(self.sqrtbase)) / self.denominator
+
+    class _Fraction:
+
+        def __init__(self, pcf):
+            self.period = list(pcf.iter_period())
+            self.preperiod = list(pcf.iter_preperiod())
+
+        def __repr__(self, unicode=False, tex=False):
+            preperiod = []
+            delimiter = ';'
+            for i in self.preperiod:
+                preperiod.append(str(i))
+                preperiod.append(delimiter)
+                delimiter = ','
+                preperiod.append(' ')
+            preperiod = ''.join(preperiod)
+
+            period = []
+            for i in self.period:
+                period.append(str(i))
+                period.append(delimiter)
+                delimiter = ','
+                period.append(' ')
+            else:
+                del period[-2:]
+            period = ''.join(period)
+
+            if unicode:
+                # This will produce a mess in the terminal
+                period = unicode_overline(period)
+                template = '[{preperiod}{period}]'
+            elif tex:
+                template = '[\, {preperiod}\overline{{{period}}} \,]'
+            else:
+                template = '[{preperiod}<period:> {period}]'
+            return template.format(preperiod=preperiod, period=period)
+
+        def unicode_repr(self):
+            return self.__repr__(unicode=True)
+
+        def tex_repr(self):
+            return self.__repr__(tex=True)
+
+    @property
+    def fraction(self):
+        return self._Fraction(self)
+
+    @classmethod
+    def from_cfraction(cls, preperiod, period):
+        return cls(*cls.resolve_quotients(preperiod, period))
+
+    @staticmethod
+    def resolve_quotients(preperiod, period):
+        """
+        >>> PeriodicContinuedFraction.resolve_quotients([1, 5], [2, 5])
+        (0, 5, 35)
+        """
+        (p0, q0), (p1, q1) = FiniteContinuedFraction.resolve_quotients(
+            period, return_two_last=True )
+        a = q1; b = q0 - p1; c = -p0
+        g = abs(gcd(b, 2 * a, 2 * c))
+        sqrtbase = (b**2 - 4 * a * c) // g**2
+        numerator = -b // g
+        denominator = 2 * a // g
+
+        for a in reversed(preperiod):
+            assert (numerator**2 - sqrtbase) % denominator == 0
+            denominator = (sqrtbase - numerator**2) // denominator
+            numerator = a * denominator - numerator
+
+        return (numerator, denominator, sqrtbase)
+
+class FiniteContinuedFraction:
+    r"""
+    Finite continued fraction
+
+    >>> the_fcf = FiniteContinuedFraction(123456, 100500)
+
+    Value is reduced (numerator and denominator have no common
+    divisor):
+    >>> the_fcf
+    FiniteContinuedFraction(10288, 8375)
+    >>> the_fcf.tex_repr()
+    '\\frac{10288}{8375}'
+
+
+    Computation of continued fraction:
+    >>> the_fcf.fraction
+    [1; 4, 2, 1, 1, 1, 4, 1, 2, 4, 1, 2]
+    >>> the_fcf.fraction.tex_repr()
+    '[\\, 1; 4, 2, 1, 1, 1, 4, 1, 2, 4, 1, 2 \\,]'
+
+    In this case, unicode representation is the same as normal __repr__()
+    >>> the_fcf.fraction.unicode_repr()
+    '[1; 4, 2, 1, 1, 1, 4, 1, 2, 4, 1, 2]'
+
+    Error and corner cases:
+    >>> FiniteContinuedFraction(123456, 0)
+    Traceback (most recent call last):
+        ...
+    ValueError: nonzero denominator required, received 0
+    >>> FiniteContinuedFraction(123456, 123456)
+    FiniteContinuedFraction(1, 1)
+    >>> FiniteContinuedFraction(0, 1).fraction
+    [0]
+
+    Reverse problem: having the sequence of quotients, compute the value:
+    >>> the_fcf = FiniteContinuedFraction.from_cfraction([1, 5, 2, 3])
+    >>> the_fcf.tex_repr()
+    '\\frac{45}{38}'
+    >>> the_fcf.fraction
+    [1; 5, 2, 3]
     """
-    Finite continued fraction.
-    """
-    def __new__(cls, A, B):
-        # \frac{A}{B}
-        if not all(isinstance(x, int) for x in (A, B)):
+
+    def __new__(cls, numerator=0, denominator=1):
+        if not all(isinstance(x, int) for x in (numerator, denominator)):
             raise TypeError("int arguments required")
-        if B == 0:
-            raise ValueError("nonzero B required")
+        if denominator == 0:
+            raise ValueError(
+                "nonzero denominator required, received {}".format(denominator)
+            )
 
         return super().__new__(cls)
 
-    def __init__(self, A, B):
-        if B < 0:
-            A = -A
-            B = -B
+    def __init__(self, numerator=0, denominator=1):
+        q = abs(gcd(numerator, denominator))
+        if denominator < 0:
+            q = -q
+        numerator //= q; denominator //= q
 
+        self.numerator = numerator
+        self.denominator = denominator
         self.quotients = quotients = []
-        while B > 0:
-            quotient = A // B
+        while denominator > 0:
+            quotient = numerator // denominator
             quotients.append(quotient)
-            A, B = B, A - B * quotient
+            numerator, denominator = (
+                denominator, numerator - denominator * quotient )
 
-    def __iter__(self):
+    def iter_quotients(self):
         return iter(self.quotients)
 
     def __repr__(self):
-        quotients = []
-        delimiter = ';'
-        for i in self.quotients:
-            quotients.append(str(i))
-            quotients.append(delimiter)
-            delimiter = ','
-            quotients.append(' ')
+        return (
+            '{self.__class__.__name__}({self.numerator}, {self.denominator})'
+            .format(self=self) )
+
+    def tex_repr(self):
+        return (
+            r'\frac{{{self.numerator}}}{{{self.denominator}}}'
+            .format(self=self) )
+
+    def __float__(self):
+        return self.numerator / self.denominator
+
+    def to_fraction(self):
+        return fractions.Fraction(self.numerator, self.denominator)
+
+    class _Fraction:
+        def __init__(self, fcf):
+            self.quotients = list(fcf.quotients)
+
+        def __repr__(self, tex=False):
+            quotients = []
+            delimiter = ';'
+            for i in self.quotients:
+                quotients.append(str(i))
+                quotients.append(delimiter)
+                delimiter = ','
+                quotients.append(' ')
+            else:
+                del quotients[-2:]
+            quotients = ''.join(quotients)
+
+            if tex:
+                template = '[\, {quotients} \,]'
+            else:
+                template = '[{quotients}]'
+            return template.format(quotients=quotients)
+
+        unicode_repr = __repr__
+
+        def tex_repr(self):
+            return self.__repr__(tex=True)
+
+    @property
+    def fraction(self):
+        return self._Fraction(self)
+
+    @classmethod
+    def from_cfraction(cls, quotients):
+        return cls(*cls.resolve_quotients(quotients))
+
+    @staticmethod
+    def resolve_quotients(quotients, return_two_last=False):
+        """
+        >>> FiniteContinuedFraction.resolve_quotients([2, 5])
+        (11, 5)
+        >>> FiniteContinuedFraction.resolve_quotients([2, 5],
+        ...     return_two_last=True )
+        ((2, 1), (11, 5))
+        """
+        p0 = 0; q0 = 1
+        p1 = 1; q1 = 0;
+        for a in quotients:
+            if not isinstance(a, int):
+                raise TypeError(a)
+            (p1, q1), (p0, q0) = (p1 * a + p0, q1 * a + q0), (p1, q1)
+        if not return_two_last:
+            return (p1, q1)
         else:
-            del quotients[-2:]
-        quotients = ''.join(quotients)
+            return (p0, q0), (p1, q1)
 
-        return '[' + quotients + ']'
+def int_sqrt(A):
+    """
+    Square root implemented in purely integer operations.
 
-def resolve_fcf(quotients, return_two_last=False):
-    # TODO: function argument checks
-    p0 = 0; q0 = 1
-    p1 = 1; q1 = 0;
-    for a in quotients:
-        (p1, q1), (p0, q0) = (p1 * a + p0, q1 * a + q0), (p1, q1)
-    if not return_two_last:
-        return (p1, q1)
-    else:
-        return (p0, q0), (p1, q1)
+    Return exact square root, if it is integer.
+    Otherwise, return a (root_floor, root_ceil) pair.
 
-def resolve_pcf(preperiod, period, return_latex=False):
-    # TODO: function argument checks
-    preperiod = list(preperiod)
-    period = list(period)
+    >>> int_sqrt(9)
+    3
+    >>> int_sqrt(10)
+    (3, 4)
+    >>> from math import sqrt
+    >>> sqrt(12345678987654321**2)
+    1.234567898765432e+16
+    >>> int_sqrt(12345678987654321**2)
+    12345678987654321
+    >>> int_sqrt(12345678987654321**2 + 2)
+    (12345678987654321, 12345678987654322)
+    >>> int_sqrt(-1)
+    Traceback (most recent call last):
+        ...
+    ValueError: math domain error
+    >>> int_sqrt(0)
+    0
+    >>> int_sqrt(1)
+    1
 
-    (p0, q0), (p1, q1) = resolve_fcf(period, return_two_last=True)
-    a = q1; b = q0 - p1; c = -p0
-    g = abs(gcd(b, 2 * gcd(a, c)))
-    A = (b**2 - 4 * a * c) // g**2
-    B = -b // g
-    C = 2 * a // g
+    """
+    if A < 0:
+        raise ValueError('math domain error')
+    if A == 0 or A == 1:
+        return A
 
-    for a in reversed(preperiod):
-        assert (A - B**2) % C == 0
-        C = (A - B**2) // C
-        B = a * C - B
+    floor, ceil = A-1, A
+    while not floor**2 < A < ceil**2:
+        ceil = (floor + A // -floor // -1) // -2 // -1
+        floor = ceil - 1
+        if A == ceil**2:
+            return ceil
+    return floor, ceil
 
-    if not return_latex:
-        return (A, B, C)
-    else:
-        return r"\frac{{\sqrt{{{A}}}{B:+}}}{{{C}}}".format(A=A, B=B, C=C)
+def gcd(*args, _gcd=fractions.gcd):
+    """
+    Return greatest common divisor of all arguments.
+
+    Based on fractions.gcd().
+
+    >>> gcd(6, 10, 15)
+    1
+    >>> gcd(6, 8, 20)
+    2
+    >>> gcd(15)
+    15
+    """
+    return reduce(_gcd, args)
+
+def unicode_overline(s):
+    return ''.join(y for x in s for y in (x, '\N{COMBINING OVERLINE}'))
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
 
