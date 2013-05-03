@@ -123,17 +123,17 @@ class WienerTimerApp(TimerApp):
     def __init__(self, master, minutes, precision):
         self.wiener_last = None
         super().__init__(master, minutes, precision)
-        self.duration = sqrt(self.duration)
         master.wm_title('Wiener timer')
 
     def start_timer(self, event):
         super().start_timer(event)
+        self.duration = sqrt(self.duration)
         self.wiener_last = self.start_time
 
     @property
     def remained(self):
         if self.wiener_last is None:
-            return self.duration**2
+            return self.duration
         time_passed = time.time() - self.wiener_last
         self.wiener_last += time_passed
         self.duration -= self.wiener(time_passed)
