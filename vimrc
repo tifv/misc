@@ -40,6 +40,10 @@ set swapsync=
 "  execute "set makeprg=" . l:swap
 "  execute "!dvipdf %:r.dvi"
 "endfunction
+"
+"command LaTeX call LaTeX()
+"autocmd FileType tex nmap <F11> :wa<CR>:LaTeX<CR>
+"autocmd FileType tex imap <F11> <C-O>:wa<CR><C-O>:LaTeX<CR>
 
 function Comment()
     if exists("b:comment_sign")
@@ -57,30 +61,20 @@ function UnComment()
   endif
 endfunction
 
-"command -nargs=* -complete=file Olm call Olm("<args>")
-"
-"command LaTeX call LaTeX()
-
-imap <F6> <C-O>:wa<CR><C-O>:Olm<CR>
-nmap <F6> :wa<CR>:Olm<CR>
-
-imap <F7> <C-O>:vertical resize 80<CR>
-nmap <F7> :vertical resize 80<CR>
-
 nmap <F8> :call Comment()<CR><Down>
 imap <F8> <C-O>:call Comment()<CR><Down>
 
 nmap <F9> :call UnComment()<CR><Down>
 imap <F9> <C-O>:call UnComment()<CR><Down>
 
+imap <F7> <C-O>:vertical resize 80<CR>
+nmap <F7> :vertical resize 80<CR>
+
 autocmd FileType vim let b:comment_sign = '"'
 autocmd FileType make,python,yaml,conf,sh let b:comment_sign = '#'
 autocmd FileType tex,plaintex,mp,mf let b:comment_sign = "%"
 autocmd FileType haskell let b:comment_sign = "--"
 autocmd FileType pure let b:commment_sign = "//"
-
-"autocmd FileType tex nmap <F11> :wa<CR>:LaTeX<CR>
-"autocmd FileType tex imap <F11> <C-O>:wa<CR><C-O>:LaTeX<CR>
 
 autocmd FileType yaml setlocal shiftwidth=2
 autocmd FileType yaml setlocal tabstop=2
@@ -95,3 +89,6 @@ set viminfo='300,<50,s10,h,r/media
 
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
+" This is going to .gvimrc
+"set guifont=Droid\ Sans\ Mono\ 11
+"set vb t_vb
