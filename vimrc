@@ -74,7 +74,7 @@ autocmd FileType vim let b:comment_sign = '"'
 autocmd FileType make,python,yaml,conf,sh let b:comment_sign = '#'
 autocmd FileType tex,plaintex,mp,mf let b:comment_sign = "%"
 autocmd FileType haskell let b:comment_sign = "--"
-autocmd FileType pure let b:commment_sign = "//"
+autocmd FileType pure,asy let b:comment_sign = "//"
 
 autocmd FileType yaml setlocal shiftwidth=2
 autocmd FileType yaml setlocal tabstop=2
