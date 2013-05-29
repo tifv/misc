@@ -143,7 +143,14 @@ class WienerTimerApp(TimerApp):
     def wiener(time_passed):
         return normalvariate(0, 1.4826022184455 * sqrt(time_passed))
 
+def set_terminal_caption():
+    import sys
+    sys.stdout.write('\033]2;' + sys.argv[0].rpartition('/')[2] + '\007')
+    sys.stdout.flush()
+
 if __name__ == '__main__':
+    set_terminal_caption()
+
     import argparse
     parser = argparse.ArgumentParser(prog='tktimer', description="Tkinter-based timer")
     parser.add_argument('minutes', type=float,
