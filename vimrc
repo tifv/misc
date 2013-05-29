@@ -76,7 +76,7 @@ autocmd FileType tex,plaintex,mp,mf let b:comment_sign = "%"
 autocmd FileType haskell let b:comment_sign = "--"
 autocmd FileType pure let b:commment_sign = "//"
 
-autocmd FileType gentoo-make-conf,gentoo-package-keywords let b:comment_sign = '#'
+autocmd FileType gentoo-make-conf,gentoo-package-keywords,gentoo-package-use let b:comment_sign = '#'
 
 autocmd FileType yaml setlocal shiftwidth=2
 autocmd FileType yaml setlocal tabstop=2
