@@ -1,0 +1,3 @@
+[submodule "jtimer"]
+	path = jtimer
+	url = https://tifv@bitbucket.org/tifv/jtimer.git
