@@ -28,7 +28,8 @@ PATH="${PATH}:/home/july/bin"
 
 alias init='sudo /sbin/init'
 
-alias wm-lock='gnome-screensaver-command --lock'
+alias gnome-wm-lock='dbus-send --type=method_call --dest=org.gnome.ScreenSaver /org/gnome/ScreenSaver org.gnome.ScreenSaver.Lock'
+alias kde-wm-lock='qdbus org.freedesktop.ScreenSaver /ScreenSaver Lock'
 alias pm-suspend='sudo /usr/sbin/pm-suspend'
 
 nau() {
@@ -95,7 +96,7 @@ guake-status() {
 alias cdj='cd ~/olm/jeolm'
 
 alias jeolm='python3.3 -m jeolm'
-alias jtimer='python3.2 -m jtimer'
+alias jtimer='python3.3 -m jtimer'
 
 _jeolm_completion() {
     COMPREPLY=( $(python3.3 -m jeolm.completion "$COMP_CWORD" "${COMP_WORDS[@]}") )
