@@ -1,31 +1,35 @@
 #!/usr/bin/env python3
 from tkinter import *
 
-def main(message, font='Monospace 30', title='just a message'):
+PROG = 'justmessage'
+
+def main(*, message, font, font_size, title):
     root = Tk()
     root.wm_title(title)
-    label = Label(root, text=message, font=font).pack()
+    label = Label(root, text=message, font='{} {}'.format(font, font_size))
+    label.pack()
     root.mainloop()
 
-def set_terminal_caption():
+def set_terminal_caption(caption=None):
     import sys
-    sys.stdout.write('\033]2;' + sys.argv[0].rpartition('/')[2] + '\007')
+    if caption is None:
+        caption = sys.argv[0].rpartition('/')[2]
+    sys.stdout.write('\033]2;' + caption + '\007')
     sys.stdout.flush()
 
 if __name__ == '__main__':
-    set_terminal_caption()
+    set_terminal_caption(PROG)
 
     import argparse
-    parser = argparse.ArgumentParser(prog='justmessage', description="just display a message")
+    parser = argparse.ArgumentParser(prog=PROG,
+        description='just display a message' )
     parser.add_argument('message')
-    parser.add_argument('-f', '--font')
-    parser.add_argument('-t', '--title')
+    parser.add_argument('-F', '--font', default='Sans')
+    parser.add_argument('-f', '--font-size', type=int,
+        default=100,
+        help='label font size' )
+    parser.add_argument('-t', '--title', default='just a message')
     args = parser.parse_args()
 
-    kwargs = {}
-    if args.font is not None:
-        kwargs.update(font=args.font)
-    if args.title is not None:
-        kwargs.update(title=args.title)
-    main(args.message, **kwargs)
+    main(**vars(args))
 
