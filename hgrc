@@ -1,0 +1,20 @@
+# hgrc
+
+[alias]
+myar = ar -t tgz "%b.%R.tar.gz"
+latest=log -r -7:
+sd=serve --daemon
+
+[ui]
+editor=vim
+merge=merge
+
+username= July Tikhonov <july.tikh@gmail.com>
+
+[extensions]
+fetch =
+mq =
+
+[diff]
+git=True
+
