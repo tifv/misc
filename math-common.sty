@@ -12,10 +12,6 @@
 %
 % This work has the LPPL maintenance status `author-maintained'.
 
-\usepackage[T2A]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage[russian]{babel}
-
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
@@ -61,4 +57,6 @@
 
 \newcommand{\ud}{\mathrm{d}}
 \newcommand{\pd}{\partial}
+
+\def\iflabelundefined#1{\expandafter\ifx\csname r@#1\endcsname\relax}
 
