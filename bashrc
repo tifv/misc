@@ -29,6 +29,7 @@ alias init='sudo /sbin/init'
 
 alias kde-lock='qdbus org.freedesktop.ScreenSaver /ScreenSaver Lock'
 alias kde-unlock='qdbus $(qdbus | grep kscreenlocker_greet) /MainApplication quit'
+alias kde-suspend='qdbus org.freedesktop.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession suspendToRam'
 
 etail() {
     echo -en '\033]2;etail\007'
