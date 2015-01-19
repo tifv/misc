@@ -1,7 +1,7 @@
-%wheel ALL=(ALL) ALL
+Defaults targetpw
 
-july ALL=(ALL) NOPASSWD: /usr/sbin/pm-hibernate
-july ALL=(ALL) NOPASSWD: /usr/sbin/pm-suspend
+root, july ALL=(ALL) ALL
+
 july ALL=(ALL) NOPASSWD: /sbin/init [02356]
 july ALL=(ALL) NOPASSWD: /usr/bin/tail -f /var/log/emerge.log
 july ALL=(ALL) NOPASSWD: /usr/bin/tail -f /var/log/emerge-fetch.log
