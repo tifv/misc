@@ -1,0 +1,7 @@
+[core]
+	editor = qvim -f
+[user]
+	email = july.tikh@gmail.com
+	name = July Tikhonov
+[push]
+	default = simple
