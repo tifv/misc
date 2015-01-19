@@ -11,9 +11,8 @@ if [[ $- != *i* ]] ; then
 	return
 fi
 
-alias l='ls -alF'
-alias la='ls -la'
-alias ll='ls -l'
+alias l='ls -l --group-directories-first'
+alias la='ls -l --all --group-directories-first'
 
 alias o='less'
 
@@ -24,14 +23,12 @@ alias md='mkdir'
 alias rd='rmdir'
 
 alias gvi='gvim'
-PATH="${PATH}:/home/july/bin"
+PATH="/home/july/bin:${PATH}"
 
 alias init='sudo /sbin/init'
 
-alias gnome-wm-lock='dbus-send --type=method_call --dest=org.gnome.ScreenSaver /org/gnome/ScreenSaver org.gnome.ScreenSaver.Lock'
-alias kde-wm-lock='qdbus org.freedesktop.ScreenSaver /ScreenSaver Lock'
-alias wm-lock='kde-wm-lock'
-alias pm-suspend='sudo /usr/sbin/pm-suspend'
+alias kde-lock='qdbus org.freedesktop.ScreenSaver /ScreenSaver Lock'
+alias kde-unlock='qdbus $(qdbus | grep kscreenlocker_greet) /MainApplication quit'
 
 etail() {
     echo -en '\033]2;etail\007'
