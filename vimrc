@@ -9,6 +9,7 @@ set backspace=indent,eol,start
 
 syntax on
 autocmd FileType plaintex set filetype=tex
+set modeline
 
 set hlsearch
 set incsearch
@@ -63,9 +64,11 @@ endfunction
 
 nmap <F8> :call Comment()<CR><Down>
 imap <F8> <C-O>:call Comment()<CR><Down>
+vmap <F8> :call Comment()<CR>
 
 nmap <F9> :call UnComment()<CR><Down>
 imap <F9> <C-O>:call UnComment()<CR><Down>
+vmap <F9> :call UnComment()<CR>
 
 imap <F7> <C-O>:vertical resize 80<CR>
 nmap <F7> :vertical resize 80<CR>
@@ -91,6 +94,34 @@ set viminfo='300,<50,s10,h,r/media
 
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
+set langmap=
+    \ЙЦУКЕНГШЩЗ;QWERTYUIOP,
+    \йцукенгшщз;qwertyuiop,
+    \ФЫВАПРОЛД;ASDFGHJKL,
+    \фывапролд;asdfghjkl,
+    \ЯЧСМИТЬ;ZXCVBNM,
+    \ячсмить;zxcvbnm,
+    \ХЪЖЭБЮ;{}:\"<>,хъжэю;[];'.,ё`,Ё~
+
+let s:latexspaceerror = "" .
+    \'\<\([Аа]\|[Ии]\|[Вв]\|[Кк]\|[Сс]\|[Уу]\|[Оо]\|' .
+    \'[Ии]з\|[Оо]т\|[ДдПпСсВвт]о\|[Зз]а\|[Нн][аеои]\|[Кк]о\|' .
+    \'[Ее][еёйю]\|[Оо]н\|[Ии][хм]\|[Мм]ы\|[Тт]е\)\zs\( \|\n\)\ze\|' .
+    \'\zs\( \|\n\)\ze---\|\zs\( \|\n\)\ze\(ли\|же\|бы\)\>'
+
+function HighlighLaTeXSpaceErrors()
+    highlight latexspaceerror ctermbg=lightmagenta guibg=lightmagenta
+    execute "match latexspaceerror /" . s:latexspaceerror . "/"
+endfunction
+
+function SubstituteLaTeXSpaceErrors()
+    execute "%substitute/" . s:latexspaceerror . '/\~/ce'
+endfunction
+
 " This is going to .gvimrc
-"set guifont=Droid\ Sans\ Mono\ 11
-"set vb t_vb
+"set guifont=Monospace\ 11
+"set vb t_vb=
+"set guioptions-=m
+"set guioptions-=T
+"set guioptions+=c
+
