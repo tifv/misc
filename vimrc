@@ -1,10 +1,10 @@
-set autoindent
-autocmd FileType * set nocindent
-
-set expandtab
-
+set tabstop=8
 set shiftwidth=4
-set tabstop=4
+set softtabstop=-1
+set expandtab
+set smarttab
+set autoindent
+
 set backspace=indent,eol,start
 
 syntax on
@@ -79,10 +79,7 @@ autocmd FileType tex,plaintex,mp,mf let b:comment_sign = "%"
 autocmd FileType haskell let b:comment_sign = "--"
 autocmd FileType pure,asy let b:comment_sign = "//"
 
-autocmd FileType gentoo-make-conf,gentoo-package-keywords,gentoo-package-use let b:comment_sign = '#'
-
 autocmd FileType yaml setlocal shiftwidth=2
-autocmd FileType yaml setlocal tabstop=2
 
 set mouse=a
 
@@ -104,18 +101,23 @@ set langmap=
     \ХЪЖЭБЮ;{}:\"<>,хъжэю;[];'.,ё`,Ё~
 
 let s:latexspaceerror = "" .
-    \'\<\([Аа]\|[Ии]\|[Вв]\|[Кк]\|[Сс]\|[Уу]\|[Оо]\|' .
-    \'[Ии]з\|[Оо]т\|[ДдПпСсВвт]о\|[Зз]а\|[Нн][аеои]\|[Кк]о\|' .
-    \'[Ее][еёйю]\|[Оо]н\|[Ии][хм]\|[Мм]ы\|[Тт]е\)\zs\( \|\n\)\ze\|' .
-    \'\zs\( \|\n\)\ze---\|\zs\( \|\n\)\ze\(ли\|же\|бы\)\>'
+    \'-\@4<!\<\(' .
+        \'[Аа]\|[Ии]\|[Вв]\|[Кк]\|[Сс]\|[Уу]\|[Оо]\|' .
+        \'[Ии]з\|[Оо][тб]\|[ДдПпСсВвт]о\|[Зз]а\|[Нн][аеоиу]\|[Кк]о\|' .
+    \'\)\zs\( \|\n\)\ze' .
+\'\|' .
+    \'\zs\( \|\n\)\ze---' .
+\'\|' .
+    \'\zs\( \|\n\)\ze\(ли\|же\|бы\)\>'
 
 function HighlighLaTeXSpaceErrors()
     highlight latexspaceerror ctermbg=lightmagenta guibg=lightmagenta
     execute "match latexspaceerror /" . s:latexspaceerror . "/"
 endfunction
 
-function SubstituteLaTeXSpaceErrors()
-    execute "%substitute/" . s:latexspaceerror . '/\~/ce'
+function SubstituteLaTeXSpaceErrors() range
+    execute (a:firstline) . "," . (a:lastline) .
+        \"substitute/" . s:latexspaceerror . '/\~/ce'
 endfunction
 
 " This is going to .gvimrc
