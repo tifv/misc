@@ -80,6 +80,7 @@ autocmd FileType haskell let b:comment_sign = "--"
 autocmd FileType pure,asy let b:comment_sign = "//"
 
 autocmd FileType yaml setlocal shiftwidth=2
+autocmd FileType tex,plaintex setlocal textwidth=79
 
 set mouse=a
 
