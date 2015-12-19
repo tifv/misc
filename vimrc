@@ -1,50 +1,71 @@
+" Vi compatibility
+set cpoptions=
+
+" Initialization and syntax
+set fencs=utf-8,cp1251
+syntax on
+autocmd FileType plaintex set filetype=tex
+set modeline
+
+" Editing
+set autoindent
+set scrolloff=2
+set virtualedit=block
+set backspace=indent,eol,start
+set nojoinspaces
+set nrformats-=octal
+
+" Tabulation
 set tabstop=8
 set shiftwidth=4
 set softtabstop=-1
 set expandtab
 set smarttab
-set autoindent
 
-set backspace=indent,eol,start
-
-syntax on
-autocmd FileType plaintex set filetype=tex
-set modeline
-
+" Search and replace
 set hlsearch
 set incsearch
 set showmatch
 set gdefault
 
+" Windows and commands
+set hidden
 set showcmd
 set ruler
-
-set switchbuf=useopen,split
-set hidden
-
 set history=1000
 set wildmode=list:longest
 
-set exrc
+" Local .vimrc
+set exrc secure
 
+" Swap and viminfo
 set swapsync=
+set viminfo='300,<50,s10,h,r/media,r/run
 
-"function LaTeX()
-"  let l:fname = bufname("")
-"  let l:len = strlen(l:fname)
-"  if (match(l:fname, "/") != -1) || (strpart(l:fname, l:len-3, l:len) == "sty")
-"    return
-"  endif
-"  let l:swap = &makeprg
-"  set makeprg=latex\ -file-line-error\ -halt-on-error
-"  execute "make %"
-"  execute "set makeprg=" . l:swap
-"  execute "!dvipdf %:r.dvi"
-"endfunction
-"
-"command LaTeX call LaTeX()
-"autocmd FileType tex nmap <F11> :wa<CR>:LaTeX<CR>
-"autocmd FileType tex imap <F11> <C-O>:wa<CR><C-O>:LaTeX<CR>
+" Miscellaneous
+set mouse=a
+
+function NextDiff()
+    setlocal nodiff noscrollbind
+    2next
+    setlocal diff scrollbind
+    wincmd w
+    setlocal nodiff noscrollbind
+    2next
+    setlocal diff scrollbind
+    wincmd w
+endfunction
+
+function PrevDiff()
+    setlocal nodiff noscrollbind
+    2prev
+    setlocal diff scrollbind
+    wincmd w
+    setlocal nodiff noscrollbind
+    2prev
+    setlocal diff scrollbind
+    wincmd w
+endfunction
 
 function Comment()
     if exists("b:comment_sign")
@@ -82,15 +103,7 @@ autocmd FileType pure,asy let b:comment_sign = "//"
 autocmd FileType yaml setlocal shiftwidth=2
 autocmd FileType tex,plaintex setlocal textwidth=79
 
-set mouse=a
-
-set fencs=utf-8,cp1251
-
 let python_highlight_all=1
-
-set viminfo='300,<50,s10,h,r/media
-
-autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 set langmap=
     \ЙЦУКЕНГШЩЗ;QWERTYUIOP,
@@ -127,4 +140,10 @@ endfunction
 "set guioptions-=m
 "set guioptions-=T
 "set guioptions+=c
+
+" Overleaf adaptation
+"set binary
+"set textwidth=79
+"set modeline
+"set expandtab
 
