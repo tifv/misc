@@ -105,7 +105,7 @@ xkb_symbols "en" {
 
   key <AE01> {[                 1,            exclam                                       ]};
   key <AE02> {[                 2,                at                                       ]};
-  key <AE03> {[                 3,        numbersign,        dead_greek,        dead_greek ]};
+  key <AE03> {[                 3,        numbersign                                       ]};
   key <AE04> {[                 4,            dollar,               any,               any ]};
   key <AE05> {[                 5,           percent                                       ]};
   key <AE06> {[                 6,       asciicircum                                       ]};
@@ -131,7 +131,7 @@ xkb_symbols "en" {
   key <BKSL> {[         backslash,               bar,               any,               any ]};
 
   key <AC01> {[                 a,                 A,                ae,                AE ]};
-  key <AC02> {[                 s,                 S                                       ]};
+  key <AC02> {[                 s,                 S,       Greek_sigma,       Greek_SIGMA ]};
   key <AC03> {[                 d,                 D                                       ]};
   key <AC04> {[                 f,                 F,               any,               any ]};
   key <AC05> {[                 g,                 G                                       ]};
