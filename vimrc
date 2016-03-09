@@ -1,3 +1,7 @@
+" vim: foldmethod=marker :
+
+" Options {{{
+
 " Vi compatibility
 set cpoptions=
 
@@ -14,6 +18,15 @@ set virtualedit=block
 set backspace=indent,eol,start
 set nojoinspaces
 set nrformats-=octal
+
+set langmap=
+    \ЙЦУКЕНГШЩЗ;QWERTYUIOP,
+    \йцукенгшщз;qwertyuiop,
+    \ФЫВАПРОЛД;ASDFGHJKL,
+    \фывапролд;asdfghjkl,
+    \ЯЧСМИТЬ;ZXCVBNM,
+    \ячсмить;zxcvbnm,
+    \ХЪЖЭБЮ;{}:\"<>,хъжэю;[];'.,ё`,Ё~
 
 " Tabulation
 set tabstop=8
@@ -44,6 +57,12 @@ set viminfo='300,<50,s10,h,r/media,r/run
 
 " Miscellaneous
 set mouse=a
+
+let python_highlight_all=1
+
+" }}}
+
+" Functions {{{
 
 function NextDiff()
     setlocal nodiff noscrollbind
@@ -83,37 +102,6 @@ function UnComment()
   endif
 endfunction
 
-nmap <F8> :call Comment()<CR><Down>
-imap <F8> <C-O>:call Comment()<CR><Down>
-vmap <F8> :call Comment()<CR>
-
-nmap <F9> :call UnComment()<CR><Down>
-imap <F9> <C-O>:call UnComment()<CR><Down>
-vmap <F9> :call UnComment()<CR>
-
-imap <F7> <C-O>:vertical resize 80<CR>
-nmap <F7> :vertical resize 80<CR>
-
-autocmd FileType vim let b:comment_sign = '"'
-autocmd FileType make,python,yaml,conf,sh let b:comment_sign = '#'
-autocmd FileType tex,plaintex,mp,mf let b:comment_sign = "%"
-autocmd FileType haskell let b:comment_sign = "--"
-autocmd FileType pure,asy let b:comment_sign = "//"
-
-autocmd FileType yaml setlocal shiftwidth=2
-autocmd FileType tex,plaintex setlocal textwidth=79
-
-let python_highlight_all=1
-
-set langmap=
-    \ЙЦУКЕНГШЩЗ;QWERTYUIOP,
-    \йцукенгшщз;qwertyuiop,
-    \ФЫВАПРОЛД;ASDFGHJKL,
-    \фывапролд;asdfghjkl,
-    \ЯЧСМИТЬ;ZXCVBNM,
-    \ячсмить;zxcvbnm,
-    \ХЪЖЭБЮ;{}:\"<>,хъжэю;[];'.,ё`,Ё~
-
 let s:latexspaceerror = "" .
     \'-\@4<!\<\(' .
         \'[Аа]\|[Ии]\|[Вв]\|[Кк]\|[Сс]\|[Уу]\|[Оо]\|' .
@@ -134,16 +122,47 @@ function SubstituteLaTeXSpaceErrors() range
         \"substitute/" . s:latexspaceerror . '/\~/ce'
 endfunction
 
-" This is going to .gvimrc
+" }}}
+
+" Mappings and autocommands {{{
+
+nmap <F8> :call Comment()<CR><Down>
+imap <F8> <C-O>:call Comment()<CR><Down>
+vmap <F8> :call Comment()<CR>
+
+nmap <F9> :call UnComment()<CR><Down>
+imap <F9> <C-O>:call UnComment()<CR><Down>
+vmap <F9> :call UnComment()<CR>
+
+imap <F7> <C-O>:vertical resize 80<CR>
+nmap <F7> :vertical resize 80<CR>
+
+autocmd FileType vim let b:comment_sign = '"'
+autocmd FileType make,python,sh let b:comment_sign = '#'
+autocmd FileType yaml,conf,gitconfig let b:comment_sign = '#'
+autocmd FileType tex,plaintex,mp,mf let b:comment_sign = "%"
+autocmd FileType haskell let b:comment_sign = "--"
+autocmd FileType pure,asy let b:comment_sign = "//"
+
+autocmd FileType yaml setlocal shiftwidth=2
+autocmd FileType tex,plaintex setlocal textwidth=79
+
+" }}}
+
+" Parts {{{
+
+" [gvimrc]
 "set guifont=Monospace\ 11
 "set vb t_vb=
 "set guioptions-=m
 "set guioptions-=T
 "set guioptions+=c
 
-" Overleaf adaptation
+" [Overleaf]
 "set binary
 "set textwidth=79
 "set modeline
 "set expandtab
+
+" }}}
 
