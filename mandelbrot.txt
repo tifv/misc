@@ -1,0 +1,100 @@
+# 1
+[Containments][107][Wallpaper][mandelbrot]
+mandelbrotcenter=-0.670314812434196,-0.45801820305277
+mandelbrotcolor1=0,0,0
+mandelbrotcolor2=255,255,255
+mandelbrotcolor3=85,85,255
+mandelbrotlock=2
+mandelbrotquality=4
+mandelbrotzoom=1.59104337558289e-07
+
+# 2
+[Containments][154][Wallpaper][mandelbrot]
+mandelbrotcenter=-0.820565633490384,-0.184549925633487
+mandelbrotcolor1=0,0,0
+mandelbrotcolor2=255,255,255
+mandelbrotcolor3=0,0,255
+mandelbrotlock=2
+mandelbrotquality=4
+mandelbrotzoom=5.28245003608059e-07
+
+# 3
+[Containments][155][Wallpaper][mandelbrot]
+mandelbrotcenter=-1.75678353421703,-0.0178064675770431
+mandelbrotcolor1=0,0,0
+mandelbrotcolor2=255,255,255
+mandelbrotcolor3=255,0,0
+mandelbrotlock=2
+mandelbrotquality=4
+mandelbrotzoom=8.38008609604235e-08
+
+# 4
+[Containments][544][Wallpaper][mandelbrot]
+mandelbrotcenter=-1.96677885765507,3.94539685140921e-05
+mandelbrotcolor1=0,0,0
+mandelbrotcolor2=255,255,255
+mandelbrotcolor3=255,128,0
+mandelbrotlock=2
+mandelbrotquality=4
+mandelbrotzoom=2.61877690501327e-09
+
+# 5
+[Containments][157][Wallpaper][mandelbrot]
+mandelbrotcenter=-0.534829009872302,-0.537236486483226
+mandelbrotcolor1=0,0,0
+mandelbrotcolor2=255,255,255
+mandelbrotcolor3=0,0,255
+mandelbrotlock=2
+mandelbrotquality=4
+mandelbrotzoom=3.8019365599697e-05
+
+# 6
+[Containments][158][Wallpaper][mandelbrot]
+mandelbrotcenter=-0.212025806160497,-0.817274294773464
+mandelbrotcolor1=0,0,0
+mandelbrotcolor2=255,255,255
+mandelbrotcolor3=0,0,255
+mandelbrotlock=2
+mandelbrotquality=4
+mandelbrotzoom=7.41322699896359e-08
+
+# 7
+[Containments][423][Wallpaper][mandelbrot]
+mandelbrotcenter=-1.40264169099999,-1.54598677049492e-07
+mandelbrotcolor1=0,0,0
+mandelbrotcolor2=255,255,255
+mandelbrotcolor3=0,192,0
+mandelbrotlock=2
+mandelbrotquality=4
+mandelbrotzoom=1.6343461751862e-07
+
+# 8
+[Containments][560][Wallpaper][mandelbrot]
+mandelbrotcenter=-0.473736794919379,-0.595862762172708
+mandelbrotcolor1=0,0,0
+mandelbrotcolor2=255,255,255
+mandelbrotcolor3=0,160,160
+mandelbrotlock=2
+mandelbrotquality=4
+mandelbrotzoom=0.000129664256892156
+
+# 9
+[Containments][239][Wallpaper][mandelbrot]
+mandelbrotcenter=-1.25044015450552,-0.174585458817538
+mandelbrotcolor1=0,0,0
+mandelbrotcolor2=255,255,255
+mandelbrotcolor3=128,0,255
+mandelbrotlock=2
+mandelbrotquality=4
+mandelbrotzoom=5.89780232420042e-06
+
+
+[Containments][557][Wallpaper][mandelbrot]
+mandelbrotcenter=-0.25,0
+mandelbrotcolor1=0,0,0
+mandelbrotcolor2=255,255,255
+mandelbrotcolor3=0,0,255
+mandelbrotlock=0
+mandelbrotquality=1
+mandelbrotzoom=4
+
