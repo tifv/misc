@@ -25,8 +25,8 @@ xkb_symbols "math" {
 
   key <AE10> {[               any,               any,          emptyset,            circle ]};
 
-  key <AE11> {[               any,               any,             U2212                    ]};
-  //                                                        (minus sign)
+  key <AE11> {[               any,               any,             U2212,             U2213 ]};
+  //                                                        (minus sign)    (minus-or-plus)
 
   key <AE12> {[               any,               any,          notequal,         plusminus ]};
 
@@ -54,7 +54,8 @@ xkb_symbols "typo" {
 
   key <AB10> {[               any,               any,            emdash,            endash ]};
 
-  key <SPCE> {[               any,               any,      nobreakspace,         thinspace ]};
+  key <SPCE> {[               any,               any,      nobreakspace,             U202F ]};
+  //                                                                          (narrow nbsp)
 
 };
 
