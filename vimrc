@@ -110,7 +110,9 @@ let s:latexspaceerror = "" .
 \'\|' .
     \'\zs\( \|\n\)\ze---' .
 \'\|' .
-    \'\zs\( \|\n\)\ze\(ли\|же\|бы\)\>'
+    \'\zs\( \|\n\)\ze\(ли\|же\|бы\)\>' .
+\'\|' .
+    \'\%xA0'
 
 function HighlighLaTeXSpaceErrors()
     highlight latexspaceerror ctermbg=lightmagenta guibg=lightmagenta
