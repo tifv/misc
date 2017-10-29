@@ -1,5 +1,10 @@
 " vim: foldmethod=marker :
 
+if exists('g:july_vimrc')
+    finish
+endif
+let g:july_vimrc = 1
+
 " Options {{{
 
 " Vi compatibility
@@ -31,7 +36,7 @@ set langmap=
 " Tabulation
 set tabstop=8
 set shiftwidth=4
-set softtabstop=-1
+set softtabstop=0
 set expandtab
 set smarttab
 
@@ -53,7 +58,7 @@ set exrc secure
 
 " Swap and viminfo
 set swapsync=
-set viminfo='300,<50,s10,h,r/media,r/run
+set viminfo='300,<50,s10,h,r/home/july/run
 
 " Miscellaneous
 set mouse=a
@@ -108,7 +113,7 @@ let s:latexspaceerror = "" .
         \'[Ии]з\|[Оо][тб]\|[ДдПпСсВвт]о\|[Зз]а\|[Нн][аеоиу]\|[Кк]о\|' .
     \'\)\zs\( \|\n\)\ze' .
 \'\|' .
-    \'\zs\( \|\n\)\ze---' .
+    \'\zs\( \|\n\)\ze\(---\|\u2014\)' .
 \'\|' .
     \'\zs\( \|\n\)\ze\(ли\|же\|бы\)\>' .
 \'\|' .
