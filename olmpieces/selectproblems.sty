@@ -1,0 +1,31 @@
+\RequirePackage{environ}
+\RequirePackage{jeolm}
+
+\newenvironment{Problem}[1]
+  {\begin{problems}\itemy{#1}}
+  {\end{problems}}
+
+\def\problems@select@in#1{%
+  \expandafter\problems@select@in@\problems@select@list\@in@sep#1\@in@end}
+\def\problems@select@in@#1\@in@sep#2\@in@end{\in@{,#2,}{,#1,}}
+\newif\ifproblems@select@selected
+\newenvironment{problems/select}[1]
+  {%
+    \edef\problems@select@list{#1}%
+    \renewenvironment{Problem}[1]
+      {%
+        \problems@select@in{##1}\ifin@
+          \let\problems@select@select\@firstoftwo
+          \problems@select@selectedtrue
+        \else
+          \let\problems@select@select\@secondoftwo
+          \problems@select@selectedfalse
+        \fi
+        \problems@select@select
+          {\begin{problems}\itemy{##1}}%
+          {\Collect@Body\@gobble}%
+      }
+      {\ifproblems@select@selected\end{problems}\fi}
+  }
+  {}
+

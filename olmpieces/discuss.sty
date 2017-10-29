@@ -1,0 +1,51 @@
+% Some colours: Crimson, DarkRed, Red, DarkOrange, DarkGoldenrod, Olive, OliveDrab, Green, DarkSlateGray, Teal, Blue, Navy, SteelBlue, Indigo, Purple.
+% All colours: mirrors.ctan.org/macros/latex/contrib/xcolor/xcolor.pdf
+%   page 38, sections 4.1 and 4.3
+
+
+\RequirePackage{environ}
+
+\NewEnviron{discuss}{}
+
+\def\discussformat{\small\sffamily}
+\def\discussprefix{\par\discussformat}
+
+\newenvironment{discuss!}[1][]
+  {\discussprefix
+    \edef\thediscussername{\discussername{#1}}\ifx\thediscussername\empty\else
+      \discussercolour{#1}%
+      \thediscussername:\enspace\ignorespaces
+    \fi}
+  {}
+
+\newcommand\comment{\@ifstar\comment@star\comment@}
+\newcommand\comment@[2][]{\begin{discuss}[#1]#2\end{discuss}}
+\newcommand\comment@star[2][]{\begingroup\def\discussprefix{\discussformat}%
+    \begin{discuss}[#1]#2\end{discuss}\endgroup}
+
+\newcommand\discussercolour[1]{%
+    \expandafter\ifx\csname discusser@colour@#1\endcsname\relax\else
+  \color{\csname discusser@colour@#1\endcsname}%
+\fi}
+\newcommand\discussername[1]{%
+    \expandafter\ifx\csname discusser@name@#1\endcsname\relax#1\else
+  \csname discusser@name@#1\endcsname%
+\fi}
+
+\newif\ifdefdiscusserverbatim
+\defdiscusserverbatimfalse
+\newcommand\defdiscusser[3]{%
+  \global\expandafter\def\csname discusser@name@#1\endcsname{#2}%
+  \global\expandafter\def\csname discusser@colour@#1\endcsname{#3}%
+  \ifdefdiscusserverbatim\begingroup\discussformat\footnotesize
+    \color{#3}#2\endgroup\enspace\fi
+}
+
+\newenvironment{spoilers}
+  {\comment{SPOILERS}\def\discussformat{\footnotesize\sffamily}}
+  {}
+
+\newenvironment{discuss/enable}
+  {\renewenvironment{discuss}{\begin{discuss!}}{\end{discuss!}}}
+  {}
+
