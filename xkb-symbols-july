@@ -20,6 +20,13 @@ xkb_symbols "math" {
 
   key <AE04> {[               any,               any,        squareroot,         checkmark ]};
 
+  key <AE05> {[               any,               any,          infinity,               any ]};
+
+  key <AE06> {[               any,               any,             U2AF6,               any ]};
+  //                                                      (triple colon)
+
+  key <AE07> {[               any,               any,      intersection,             union ]};
+
   key <AE08> {[               any,               any,             U22C5,          multiply ]};
   //                                                      (dot operator)
 
@@ -52,6 +59,8 @@ xkb_symbols "typo" {
 
   include "july(quotes)"
 
+  key <TLDE> {[               any,               any,        asciitilde,          ellipsis ]};
+
   key <AB10> {[               any,               any,            emdash,            endash ]};
 
   key <SPCE> {[               any,               any,      nobreakspace,             U202F ]};
@@ -74,6 +83,9 @@ xkb_symbols "dead" {
 hidden partial alphanumeric_keys
 xkb_symbols "misc" {
 
+  key <AE09> {[               any,               any,enfilledcircbullet                    ]};
+  key <AD03> {[               any,               any,            U1F4A9                    ]};
+  //                                                       (pile of poo)
   key <AD04> {[               any,               any,        rightarrow,         leftarrow ]};
   key <AD05> {[               any,               any,           uparrow,         downarrow ]};
 
@@ -102,7 +114,7 @@ xkb_symbols "en" {
 
   include "july(common)"
 
-  key <TLDE> {[             grave,        asciitilde,          ellipsis,        asciitilde ]};
+  key <TLDE> {[             grave,        asciitilde,               any,               any ]};
 
   key <AE01> {[                 1,            exclam                                       ]};
   key <AE02> {[                 2,                at                                       ]};
@@ -112,21 +124,21 @@ xkb_symbols "en" {
   key <AE06> {[                 6,       asciicircum                                       ]};
   key <AE07> {[                 7,         ampersand                                       ]};
   key <AE08> {[                 8,          asterisk,               any,               any ]};
-  key <AE09> {[                 9,         parenleft                                       ]};
+  key <AE09> {[                 9,         parenleft,               any,               any ]};
   key <AE10> {[                 0,        parenright,               any,               any ]};
   key <AE11> {[             minus,        underscore,               any,               any ]};
   key <AE12> {[             equal,              plus,               any,               any ]};
 
   key <AD01> {[                 q,                 Q                                       ]};
   key <AD02> {[                 w,                 W                                       ]};
-  key <AD03> {[                 e,                 E                                       ]};
+  key <AD03> {[                 e,                 E,               any,               any ]};
   key <AD04> {[                 r,                 R,               any,               any ]};
   key <AD05> {[                 t,                 T,               any,               any ]};
   key <AD06> {[                 y,                 Y                                       ]};
   key <AD07> {[                 u,                 U                                       ]};
   key <AD08> {[                 i,                 I                                       ]};
   key <AD09> {[                 o,                 O,                oe,                OE ]};
-  key <AD10> {[                 p,                 P                                       ]};
+  key <AD10> {[                 p,                 P,          Greek_pi,          Greek_PI ]};
   key <AD11> {[       bracketleft,         braceleft,               any,               any ]};
   key <AD12> {[      bracketright,        braceright,               any,               any ]};
   key <BKSL> {[         backslash,               bar,               any,               any ]};
@@ -168,7 +180,7 @@ xkb_symbols "ru" {
 
   include "july(common)"
 
-  key <TLDE> {[       Cyrillic_io,       Cyrillic_IO,        asciitilde,          ellipsis ]};
+  key <TLDE> {[       Cyrillic_io,       Cyrillic_IO,               any,               any ]};
 
   key <AE01> {[                 1,            exclam                                       ]};
   key <AE02> {[                 2,          quotedbl                                       ]};

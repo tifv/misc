@@ -124,9 +124,9 @@ function HighlighLaTeXSpaceErrors()
     execute "match latexspaceerror /" . s:latexspaceerror . "/"
 endfunction
 
-function SubstituteLaTeXSpaceErrors() range
+function SubstituteLaTeXSpaceErrors(r) range
     execute (a:firstline) . "," . (a:lastline) .
-        \"substitute/" . s:latexspaceerror . '/\~/ce'
+        \"substitute/" . s:latexspaceerror . '/' . a:r . '/ce'
 endfunction
 
 " }}}

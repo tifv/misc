@@ -1,0 +1,9 @@
+#!/bin/bash
+
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+SHA1=$3
+
+# Hide overleaf link (it can be used to edit the project)
+sed 's|git.overleaf.com/[0-9a-z]\+|git.overleaf.com/…|' -i "$COMMIT_MSG_FILE"
+

@@ -57,3 +57,6 @@ diff-less() {
 } # diff-less
 alias d-o='diff-less'
 
+if [[ -f ~/.bashrc.local ]]; then
+    source ~/.bashrc.local
+fi
