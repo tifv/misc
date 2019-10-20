@@ -1,0 +1,14 @@
+*.dvi
+*.xdv
+*.pdf
+
+*.eps
+*.aux
+*.log
+*.out
+*.pre
+*.toc
+
+*.fls
+*.fdb_latexmk
+

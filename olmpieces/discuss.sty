@@ -1,9 +1,13 @@
-% Some colours: Crimson, DarkRed, Red, DarkOrange, DarkGoldenrod, Olive, OliveDrab, Green, DarkSlateGray, Teal, Blue, Navy, SteelBlue, Indigo, Purple.
+% Please use dark colours. Some good colours:
+% Crimson, DarkRed, Red, DarkOrange, DarkGoldenrod, Olive, OliveDrab, Green, DarkSlateGray, Teal, Blue, Navy, SteelBlue, Indigo, Purple.
 % All colours: mirrors.ctan.org/macros/latex/contrib/xcolor/xcolor.pdf
 %   page 38, sections 4.1 and 4.3
+% Also possible: \definecolor{MyColour}{rgb}{0,0.5,0.2}
 
-
+\RequirePackage{etoolbox}
 \RequirePackage{environ}
+\RequirePackage{xcolor}
+\RequirePackage{calculator}
 
 \NewEnviron{discuss}{}
 
@@ -11,12 +15,13 @@
 \def\discussprefix{\par\discussformat}
 
 \newenvironment{discuss!}[1][]
-  {\discussprefix
-    \edef\thediscussername{\discussername{#1}}\ifx\thediscussername\empty\else
-      \discussercolour{#1}%
-      \thediscussername:\enspace\ignorespaces
-    \fi}
-  {}
+    {\discussprefix
+        \edef\thediscusserid{#1}%
+        \ifx\thediscusserid\empty\else
+            \discussercolour{#1}%
+            \discussername{#1}:\enspace\ignorespaces
+        \fi}
+    {\par}
 
 \newcommand\comment{\@ifstar\comment@star\comment@}
 \newcommand\comment@[2][]{\begin{discuss}[#1]#2\end{discuss}}
@@ -24,28 +29,61 @@
     \begin{discuss}[#1]#2\end{discuss}\endgroup}
 
 \newcommand\discussercolour[1]{%
-    \expandafter\ifx\csname discusser@colour@#1\endcsname\relax\else
-  \color{\csname discusser@colour@#1\endcsname}%
-\fi}
+\ifcsname discusser@colour@#1\endcsname%
+    \color{\csname discusser@colour@#1\endcsname}%
+\else\fi}
 \newcommand\discussername[1]{%
-    \expandafter\ifx\csname discusser@name@#1\endcsname\relax#1\else
-  \csname discusser@name@#1\endcsname%
-\fi}
+\ifcsname discusser@name@#1\endcsname%
+    \csname discusser@name@#1\endcsname%
+\else#1\fi}
 
-\newif\ifdefdiscusserverbatim
-\defdiscusserverbatimfalse
-\newcommand\defdiscusser[3]{%
-  \global\expandafter\def\csname discusser@name@#1\endcsname{#2}%
-  \global\expandafter\def\csname discusser@colour@#1\endcsname{#3}%
-  \ifdefdiscusserverbatim\begingroup\discussformat\footnotesize
-    \color{#3}#2\endgroup\enspace\fi
-}
+\newcounter{discussercolour}
+\setcounter{discussercolour}{1}
+\def\defdiscusser#1#2{%
+    \begingroup\def\discusserid{#1}%
+    \global\csdef{discusser@name@\discusserid}{#2}%
+    \gappto\discussermanifest@{\discussermanifest@item{#1}}%
+    \@ifnextchar[\defdiscussercolour\autodefdiscussercolour}
+\def\defdiscussercolour[#1]{%
+    \global\csedef{discusser@colour@\discusserid}{#1}\endgroup}
+\def\autodefdiscussercolour{%
+    \global\csedef{discusser@colour@\discusserid}%
+        {DiscusserColour\thediscussercolour}%
+    \MULTIPLY{\thediscussercolour}{0.61803}{\discussercolourshift}%
+    \MULTIPLY{\discussercolourshift}{360}{\discussercolourshift}%
+    \MULTIPLY{\thediscussercolour}{0.07785}{\discussercolourgray}%
+    \FRACTIONALPART{\discussercolourgray}{\discussercolourgray}%
+    \SQUARE{\discussercolourgray}{\discussercolourgray}%
+    \MULTIPLY{\discussercolourgray}{-40}{\discussercolourgray}%
+    \ADD{\discussercolourgray}{80}{\discussercolourgray}%
+    \INTEGERPART{\discussercolourgray}{\discussercolourgray}%
+    \xglobal\colorlet{DiscusserColour\thediscussercolour}%
+        {Red!\discussercolourgray!Black>twheel,\discussercolourshift}%
+    \endgroup\stepcounter{discussercolour}}
+\def\discussermanifest{\begingroup
+    \discussformat\footnotesize\discussermanifest@%
+\sloppy\par\endgroup}
+\def\discussermanifest@{}
+\def\discussermanifest@item#1{\mbox{\discussercolour{#1}\discussername{#1}}\quad}
 
+\def\spoilersname{SPOILERS}
+
+\colorlet{spoilercolour}{White!75!Black}
+\colorlet{spoilerurlcolour}{spoilercolour!85!Blue}
 \newenvironment{spoilers}
-  {\comment{SPOILERS}\def\discussformat{\footnotesize\sffamily}}
+  {%
+    \comment{\color{spoilercolour!80!Black}\bfseries\spoilersname}%
+    \def\discussformat{\footnotesize\sffamily\color{spoilercolour}}%
+    \discussformat%
+    \renewcommand\discussercolour[1]{}%
+    \hypersetup{urlcolor=spoilerurlcolour}%
+  }
   {}
 
-\newenvironment{discuss/enable}
-  {\renewenvironment{discuss}{\begin{discuss!}}{\end{discuss!}}}
-  {}
+\newcommand\discussenable{\renewenvironment{discuss}{\begin{discuss!}}{\end{discuss!}}}
+\newcommand\spoilersdisable{\RenewEnviron{spoilers}{}}
+
+% Legacy environments, not exactly convenient
+\newenvironment{discuss/enable}{\discussenable}{}
+\newenvironment{spoilers/disable}{\spoilersdisable}{}
 

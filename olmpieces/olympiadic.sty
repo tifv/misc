@@ -1,0 +1,232 @@
+\RequirePackage{environ}
+\RequirePackage{etoolbox}
+\RequirePackage{ifthen}
+
+\newcounter{Problem}
+\let\doProblem\relax
+\def\undoProblem{%
+    \let\savedoProblem\doProblem\let\doProblem\relax%
+}
+\def\redoProblem{%
+    \let\doProblem\savedoProblem\let\savedoProblem\undefined%
+}
+\def\Problemanchor{\ifdefined\phantomsection\phantomsection\fi}
+
+% Metadata {{{1
+
+\newbox\problemsourcebox
+\newlength\problemsourcewidth
+\newcommand\problemsource[1]{\leavevmode\unskip\nobreak%
+    \savebox{\problemsourcebox}{\emph{(#1)}}%
+    \settowidth{\problemsourcewidth}{\usebox\problemsourcebox}%
+    \hspace{\stretch{1}}\null
+    \discretionary%
+        {}%
+        {\mbox{\hspace{\linewidth}\hspace{-\problemsourcewidth}%
+            \usebox\problemsourcebox}}%
+        {\mbox{\quad\usebox\problemsourcebox}}%
+    \par%
+}
+\newenvironment{problemsource/disable}
+  {\renewcommand\problemsource[1]{\par}}
+  {}
+
+% Language dispatch {{{1
+
+\def\problemname#1{Problem #1}
+\def\answername{Answer}
+\def\solutionname{Solution}
+\def\criterianame{Marking scheme}
+
+\def\problemnameru#1{Задача #1}
+\def\answernameru{Ответ}
+\def\solutionnameru{Решение}
+\def\criterianameru{Критерии}
+\def\languageruredef{%
+    \let\leq\leqslant \let\geq\geqslant%
+    \let\problemname\problemnameru
+    \let\answername\answernameru
+    \let\solutionname\solutionnameru
+    \let\criterianame\criterianameru
+}
+
+\newboolean{en}
+\newboolean{ru}
+\newboolean{ru*}
+
+\NewEnviron{en}{}
+\NewEnviron{ru}{}
+
+\newenvironment{en/enable}{%
+    \renewenvironment{en}{\par%
+    }{%
+    }%
+    \setboolean{en}{true}%
+}{}
+
+\newenvironment{ru/enable*}{%
+    \renewenvironment{ru}{\par%
+        \begin{otherlanguage}{russian}%
+            \languageruredef%
+    }{%
+        \end{otherlanguage}%
+    }%
+    \setboolean{ru*}{true}%
+}{}
+
+\newenvironment{ru/enable}{%
+    \begin{otherlanguage}{russian}%
+        \languageruredef%
+        \renewenvironment{ru}{\par
+        }{%
+        }%
+    \setboolean{ru}{true}%
+}{%
+    \end{otherlanguage}%
+}
+
+% Problem/solution dispatch
+
+\NewEnviron{problem}{}
+\NewEnviron{answer}{}
+\NewEnviron{solution}{}
+\NewEnviron{criteria}{}
+
+\newif\ifproblemenabled
+\problemenabledfalse
+\let\problemtextformat\relax
+\newenvironment{problem/enable}{%
+    \problemenabledtrue%
+    \renewenvironment{problem}{%
+        \par\doProblem\Problemanchor%
+        \resetsubproblem%
+        \problemtextformat\ignorespaces
+    }{}%
+}{}
+
+\newif\ifsolutionenabled
+\solutionenabledfalse
+\let\solutiontextformat\relax
+\newenvironment{solution/enable}{%
+    \solutionenabledtrue%
+    \renewenvironment{answer}[1][\answername:]{%
+        \par\emph{##1}\;\ignorespaces
+    }{}
+    \def\@solutionname{\ifproblemenabled \solutionname\fi}%
+    \renewenvironment{solution}[1][\@solutionname]{%
+        \pushQED{\qed}%
+        \trivlist\item\relax\doProblem\Problemanchor%
+        \resetsubproblem%
+        \begingroup%
+            \edef\solution@name{##1}%
+            \ifdefempty{\solution@name}%
+                {}%
+                {\em\solution@name.\enspace}%
+        \endgroup%
+        \solutiontextformat\ignorespaces%
+    }{\popQED\endtrivlist\@endpefalse}%
+}{}
+
+\newif\ifcriteriaenabled
+\criteriaenabledfalse
+\def\criteriatextformat{\sffamily}
+\def\criteria@unitem#1{%
+    \item\leavevmode\hspace{-\leftmargin}\parbox{\textwidth}{#1}}
+\newenvironment{criteria/enable}{%
+    \criteriaenabledtrue%
+    \renewenvironment{criteria}[1][\criterianame]{%
+        \resetsubproblem%
+        \def\unsubspace{\hspace{-\subproblem@space@length}}%
+        \par\doProblem\sffamily\emph{##1}\begin{list}{}{}%
+            \let\unitem\criteria@unitem%
+            \def\plus{$+$}%
+            \def\plusdot{$+\llap{.}$}%
+            \def\plusminus{$\pm$}%
+            \def\minusplus{$\mp$}%
+            \def\minusdot{$-\llap{.}$}%
+            \def\minus{$-$}%
+            %\item\relax%
+    }{%
+        \end{list}%
+    }%
+}{}
+
+\def\Problemhook{\resetsubproblem}
+\def\problemlabel#1{#1}
+%\appto\Problemhook{\stepcounter{Problem}}
+%\def\problemlabel#1{\theProblem}
+\newenvironment{Problem/internal}[1]{\Problemhook%
+    \edef\@currentlabel{\problemlabel{#1}}
+    \def\doProblem{%
+        \global\let\doProblem\relax%
+        \mbox{\textbf{\problemname{#1}.}}%
+        \enspace%
+    }%
+    \everypar{\doProblem}%
+}{%
+    \par\doProblem%
+}
+
+\newenvironment{Problem}[1]{%
+    \begin{Problem/internal}{#1}%
+}{%
+    \end{Problem/internal}%
+}
+
+\newif\ifProblem@filter@passed
+\newenvironment{Problem/filter/in}[1]{%
+    \def\Problem@filter@in##1{\endgroup
+        \expandafter\def\csname Problem/filter/in/##1\endcsname{}%
+    \begingroup\let\in\Problem@filter@in}%
+    \begingroup
+        \let\in\Problem@filter@in
+        #1%
+    \endgroup
+    \renewenvironment{Problem}[1]{%
+        \ifcsname Problem/filter/in/##1\endcsname
+            \let\Problem@filter@choice\@firstoftwo
+            \Problem@filter@passedtrue
+        \else
+            \Problemfilteredout{##1}%
+            \let\Problem@filter@choice\@secondoftwo
+            \Problem@filter@passedfalse
+        \fi
+        \Problem@filter@choice
+            {\begin{Problem/internal}{##1}}%
+            {\Collect@Body\@gobble}%
+    }
+    {%
+        \ifProblem@filter@passed\end{Problem/internal}\fi
+    }%
+}{}
+\newenvironment{Problem/filter/out}[1]{%
+    \def\Problem@filter@out##1{\endgroup
+        \expandafter\def\csname Problem/filter/out/##1\endcsname{}%
+    \begingroup\let\out\Problem@filter@out}%
+    \begingroup
+        \let\out\Problem@filter@out
+        #1%
+    \endgroup
+    \renewenvironment{Problem}[1]{%
+        \ifcsname Problem/filter/out/##1\endcsname
+            \Problemfilteredout{##1}%
+            \let\Problem@filter@choice\@secondoftwo
+            \Problem@filter@passedfalse
+        \else
+            \let\Problem@filter@choice\@firstoftwo
+            \Problem@filter@passedtrue
+        \fi
+        \Problem@filter@choice
+            {\begin{Problem/internal}{##1}}%
+            {\Collect@Body\@gobble}%
+    }
+    {%
+        \ifProblem@filter@passed\end{Problem/internal}\fi
+    }%
+}{}
+\newcommand\Problemfilteredout[1]{%
+    \par\begingroup\small\color{gray}\sffamily
+        {#1} not included.%
+    \endgroup
+}
+
