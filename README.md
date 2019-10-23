@@ -1,1 +1,1 @@
-Miscellaneous files that does not stand for separate repositories.
+Miscellaneous files that do not warrant for separate repositories.
