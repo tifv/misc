@@ -25,6 +25,10 @@ sub asy {
     popd();
     return $return;
 }
+sub asy_tex {
+    my $asy_source = shift;
+    return asy($asy_source);
+}
 sub asy_eps {
     my $asy_source = shift;
     return asy_fmt($asy_source, "eps");
@@ -58,6 +62,7 @@ sub asy_fmt {
     }
     return asy($asy_source, "pdf", $asy_latex, $asy_latex_config);
 }
+add_cus_dep("asy", "tex", 0, "asy_tex");
 add_cus_dep("asy", "eps", 0, "asy_eps");
 add_cus_dep("asy", "pdf", 0, "asy_pdf");
 
