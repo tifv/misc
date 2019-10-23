@@ -84,8 +84,8 @@ hidden partial alphanumeric_keys
 xkb_symbols "misc" {
 
   key <AE09> {[               any,               any,enfilledcircbullet                    ]};
-  key <AD03> {[               any,               any,            U1F4A9                    ]};
-  //                                                       (pile of poo)
+  key <AD03> {[               any,               any,             U2764,            U1F4A9 ]};
+  //                                                       (black heart)      (pile of poo)
   key <AD04> {[               any,               any,        rightarrow,         leftarrow ]};
   key <AD05> {[               any,               any,           uparrow,         downarrow ]};
 

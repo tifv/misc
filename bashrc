@@ -27,36 +27,12 @@ alias gvi='gvim'
 
 PATH="/home/july/bin:${PATH}"
 
-alias init='sudo /sbin/init'
-
-alias kde-lock='qdbus org.freedesktop.ScreenSaver /ScreenSaver Lock'
-alias kde-unlock='qdbus $(qdbus | grep kscreenlocker_greet) /MainApplication quit'
-alias kde-suspend='qdbus org.freedesktop.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession suspendToRam'
-
-etail() {
-    echo -en '\033]2;etail\007'
-    sudo /usr/bin/tail -f /var/log/emerge.log
-} # etail
-
-etail-fetch() {
-    echo -en '\033]2;etail-fetch\007'
-    sudo /usr/bin/tail -f /var/log/emerge-fetch.log
-} # etail-fetch
-
-make-o-matic() {
-    while true
-    do
-        sleep 0.2
-        make
-        inotifywait --event modify --event move_self "$@" || return
-    done
-} # make-o-matic
-
 diff-less() {
     source-highlight -s diff --out-format=esc | less
-} # diff-less
+}
 alias d-o='diff-less'
 
 if [[ -f ~/.bashrc.local ]]; then
     source ~/.bashrc.local
 fi
+

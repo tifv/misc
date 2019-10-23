@@ -147,6 +147,8 @@ nmap <F7> :vertical resize 80<CR>
 autocmd FileType vim let b:comment_sign = '"'
 autocmd FileType make,python,sh let b:comment_sign = '#'
 autocmd FileType yaml,conf,gitconfig let b:comment_sign = '#'
+autocmd FileType gentoo-package-use let b:comment_sign = '#'
+autocmd FileType gentoo-package-keywords let b:comment_sign = '#'
 autocmd FileType tex,plaintex,mp,mf let b:comment_sign = "%"
 autocmd FileType haskell let b:comment_sign = "--"
 autocmd FileType javascript,pure,asy let b:comment_sign = "//"
@@ -164,12 +166,6 @@ autocmd FileType tex,plaintex setlocal textwidth=79
 "set guioptions-=m
 "set guioptions-=T
 "set guioptions+=c
-
-" [Overleaf]
-"set binary
-"set textwidth=79
-"set modeline
-"set expandtab
 
 " }}}
 
