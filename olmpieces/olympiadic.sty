@@ -1,6 +1,7 @@
 \RequirePackage{environ}
 \RequirePackage{etoolbox}
 \RequirePackage{ifthen}
+\RequirePackage{tocloft}
 
 \newcounter{Problem}
 \let\doProblem\relax
@@ -10,7 +11,9 @@
 \def\redoProblem{%
     \let\doProblem\savedoProblem\let\savedoProblem\undefined%
 }
-\def\Problemanchor{\ifdefined\phantomsection\phantomsection\fi}
+\newcommand\maybephantomsection
+    {\ifdefined\phantomsection\phantomsection\fi}
+\def\Problemanchor{\maybephantomsection}
 
 % Metadata {{{1
 
@@ -57,6 +60,8 @@
 \NewEnviron{en}{}
 \NewEnviron{ru}{}
 
+% The following three environments assume that english is the default language,
+% and polyglossia is used
 \newenvironment{en/enable}{%
     \renewenvironment{en}{\par%
     }{%
@@ -66,23 +71,23 @@
 
 \newenvironment{ru/enable*}{%
     \renewenvironment{ru}{\par%
-        \begin{otherlanguage}{russian}%
+        \begin{russian}%
             \languageruredef%
     }{%
-        \end{otherlanguage}%
+        \end{russian}%
     }%
     \setboolean{ru*}{true}%
 }{}
 
 \newenvironment{ru/enable}{%
-    \begin{otherlanguage}{russian}%
+    \begin{russian}%
         \languageruredef%
         \renewenvironment{ru}{\par
         }{%
         }%
     \setboolean{ru}{true}%
 }{%
-    \end{otherlanguage}%
+    \end{russian}%
 }
 
 % Problem/solution dispatch
@@ -95,21 +100,23 @@
 \newif\ifproblemenabled
 \problemenabledfalse
 \let\problemtextformat\relax
-\newenvironment{problem/enable}{%
+\newcommand\problemenable{%
     \problemenabledtrue%
     \renewenvironment{problem}{%
         \par\doProblem\Problemanchor%
         \resetsubproblem%
         \problemtextformat\ignorespaces
     }{}%
-}{}
+}
+\newenvironment{problem/enable}{\problemenable}{}
 
 \newif\ifsolutionenabled
 \solutionenabledfalse
 \let\solutiontextformat\relax
-\newenvironment{solution/enable}{%
+\newcommand\solutionenable{%
     \solutionenabledtrue%
     \renewenvironment{answer}[1][\answername:]{%
+        \resetsubproblem%
         \par\emph{##1}\;\ignorespaces
     }{}
     \def\@solutionname{\ifproblemenabled \solutionname\fi}%
@@ -125,14 +132,15 @@
         \endgroup%
         \solutiontextformat\ignorespaces%
     }{\popQED\endtrivlist\@endpefalse}%
-}{}
+}
+\newenvironment{solution/enable}{\solutionenable}{}
 
 \newif\ifcriteriaenabled
 \criteriaenabledfalse
 \def\criteriatextformat{\sffamily}
 \def\criteria@unitem#1{%
     \item\leavevmode\hspace{-\leftmargin}\parbox{\textwidth}{#1}}
-\newenvironment{criteria/enable}{%
+\newcommand\criteriaenable{%
     \criteriaenabledtrue%
     \renewenvironment{criteria}[1][\criterianame]{%
         \resetsubproblem%
@@ -145,26 +153,32 @@
             \def\minusplus{$\mp$}%
             \def\minusdot{$-\llap{.}$}%
             \def\minus{$-$}%
-            %\item\relax%
     }{%
         \end{list}%
     }%
-}{}
+}
+\newenvironment{criteria/enable}{\criteriaenable}{}
 
-\def\Problemhook{\resetsubproblem}
+\def\Problemadvance{\ifdefined\resetsubproblem\resetsubproblem\fi}
+\def\Problemvheader{}
+\def\Problemhheader{\mbox{\textbf{\problemname{\theproblem}.}}\enspace}
+\def\Problemfooter{\medskip}
 \def\problemlabel#1{#1}
-%\appto\Problemhook{\stepcounter{Problem}}
+%\appto\Problemadvance{\stepcounter{Problem}}
 %\def\problemlabel#1{\theProblem}
-\newenvironment{Problem/internal}[1]{\Problemhook%
-    \edef\@currentlabel{\problemlabel{#1}}
+\newenvironment{Problem/internal}[1]{
+    \edef\problemarg{#1}%
+    \Problemadvance%
+    \edef\@currentlabel{\problemlabel{#1}}%
+    \def\theproblem{\problemlabel{#1}}%
+    \Problemvheader%
     \def\doProblem{%
         \global\let\doProblem\relax%
-        \mbox{\textbf{\problemname{#1}.}}%
-        \enspace%
+        \Problemhheader%
     }%
     \everypar{\doProblem}%
 }{%
-    \par\doProblem%
+    \par\doProblem\Problemfooter%
 }
 
 \newenvironment{Problem}[1]{%
@@ -172,6 +186,8 @@
 }{%
     \end{Problem/internal}%
 }
+
+% Problem filtering
 
 \newif\ifProblem@filter@passed
 \newenvironment{Problem/filter/in}[1]{%
@@ -230,3 +246,47 @@
     \endgroup
 }
 
+% Unnumerated sections
+
+\newcommand\antitoc[2]
+    {\addcontentsline{toc}{#1}{#2}}
+\newcommand\antisection[1]
+    {\par\maybephantomsection\antitoc{section}{#1}\section*{#1}}
+\newcommand\antisubsection[1]
+    {\par\maybephantomsection\antitoc{subsection}{#1}\subsection*{#1}}
+\newcommand\antisubsubsection[1]
+    {\par\maybephantomsection\antitoc{subsubsection}{#1}\subsubsection*{#1}}
+
+% Cross-links
+
+\newenvironment{Problem/autolabel}[1]{%
+    \appto\Problemhcaption{%
+        \phantomsection\label{Problem/auto:#1:\theproblem}%
+    }%
+}{}
+
+\newenvironment{Problem/autoref}[2]{%
+    \appto\Problemhcaption{%
+        \marginpar{\footnotesize\hyperref[Problem/auto:#1:\theproblem]{#2}}%
+    }%
+}{}
+
+% Add problems to table of contents
+\def\Problemtocbuffer{}
+\def\Problemtoc@add#1\@space#2\@end{%
+    \phantomsection\label{Problem/toc:#2:#1}%
+    \gappto\Problemtocbuffer
+        {\string\hyperref[Problem/toc:#2:#1]{#1}\string\enspace}%
+}
+\newenvironment{Problem/addtoc}[1][]{
+    \appto\Problemhcaption{%
+        \expandafter\Problemtoc@add\theproblem\@space#1\@end
+    }%
+    \pretocmd\antitoc{\Problemtocpush}{}{}%
+}{\Problemtocpush}
+\newcommand\Problemtocpush{\ifdefempty\Problemtocbuffer{}{%
+    \addtocontents{toc}{\cftpagenumbersoff{subsubsection}}%
+    \addtocontents{toc}{\string\contentsline{subsubsection}{\Problemtocbuffer}{}{}}%
+    \addtocontents{toc}{\cftpagenumberson{subsubsection}}%
+    \global\def\Problemtocbuffer{}%
+}}
