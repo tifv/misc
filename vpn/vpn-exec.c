@@ -77,16 +77,19 @@ main (int argc, char **argv)
         return 1;
     }
 
-    // Drop elevated priviliges
-    if (setuid(getuid()) != 0) {
-        perror("Failed to drop elevated priviliges");
-        return 1;
-    }
-    if (setuid(0) != -1) {
-        // Privileges can be restored, this is an error
-        fprintf( stderr,
-            "Failed to properly drop elevated priviges.\n" );
-        return 1;
+    uid_t uid = getuid();
+    if (uid != 0) {
+        // Drop elevated priviliges
+        if (setuid(uid) != 0) {
+            perror("Failed to drop elevated priviliges");
+            return 1;
+        }
+        if (setuid(0) != -1) {
+            // Privileges can be restored, this is an error
+            fprintf( stderr,
+                "Failed to properly drop elevated priviges.\n" );
+            return 1;
+        }
     }
 
     // Execute the target process
