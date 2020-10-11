@@ -36,3 +36,7 @@ if [[ -f ~/.bashrc.local ]]; then
     source ~/.bashrc.local
 fi
 
+add_prompt_time() {
+    PS1='\d \A '"${PS1}"
+}
+
