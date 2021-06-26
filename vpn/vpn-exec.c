@@ -32,7 +32,7 @@ main (int argc, char **argv)
     }
 
     // Enter the mount namespace
-    mountns = open("/var/run/netns/confmountns/vpn", O_RDONLY);
+    mountns = open("/run/netns/confmountns/vpn", O_RDONLY);
     if (mountns == -1) {
         perror("Failed to open mount namespace reference");
         if (cwd > 0) { close(cwd); }
@@ -62,7 +62,7 @@ main (int argc, char **argv)
     }
 
     // Enter the network namespace
-    netns = open("/var/run/netns/vpn", O_RDONLY);
+    netns = open("/run/netns/vpn", O_RDONLY);
     if (netns == -1) {
         perror("Failed to open network namespace");
         return 1;
